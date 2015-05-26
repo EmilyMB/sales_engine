@@ -2,7 +2,6 @@ require_relative 'test_helper'
 require_relative '../lib/csv_reader'
 
 class CsvLoaderTest < Minitest::Test
-
   def test_it_exists
     file = CsvReader.new
   end

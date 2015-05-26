@@ -6,7 +6,6 @@ require_relative 'item_repository'          # => true
 require_relative 'customer_repository'      # => true
 require_relative 'transaction_repository'   # => true
 
-
 class SalesEngine
   attr_reader :parent,
               :customer_repository,

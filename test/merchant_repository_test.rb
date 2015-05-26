@@ -2,10 +2,10 @@ require_relative 'test_helper'
 require_relative '../lib/merchant_repository'
 
 class MerchantRepositoryTest < Minitest::Test
-attr_reader :merchants, :merchant_repository, :sales_engine
+  attr_reader :merchants, :merchant_repository, :sales_engine
 
-def setup
-  @merchants = [{
+  def setup
+    @merchants = [{
       id: 3,
       name: 'Willms and Sons',
       created_at: '2012-03-27 14:53:59 UTC',

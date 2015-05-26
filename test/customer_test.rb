@@ -2,7 +2,6 @@ require_relative '../lib/customer'
 require_relative 'test_helper'
 
 class CustomerTest < Minitest::Test
-
   attr_reader :data, :customer, :parent
 
   def setup

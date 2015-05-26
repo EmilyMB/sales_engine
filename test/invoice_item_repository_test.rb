@@ -2,7 +2,6 @@ require_relative '../lib/invoice_item_repository'
 require_relative 'test_helper'
 
 class InvoiceItemRepoTest < Minitest::Test
-
   attr_reader :data, :invoice_item_repo, :sales_engine
 
   def setup

@@ -2,9 +2,7 @@ require_relative 'customer'
 require_relative 'office_repository'
 
 class CustomerRepository < OfficeRepository
-
   attr_reader :sales_engine, :customer_repo
-
 
   def initialize(customers, parent)
     @data ||= customers.map {|customer| Customer.new(customer, self)}

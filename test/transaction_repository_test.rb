@@ -4,8 +4,8 @@ require_relative '../lib/transaction_repository'
 class TransactionRepositoryTest < Minitest::Test
   attr_reader :transactions, :transaction_repository, :sales_engine
 
-def setup
-  @transactions = [{
+  def setup
+    @transactions = [{
 
       id: 1,
       invoice_id: 1,
@@ -40,47 +40,39 @@ def setup
   end
 
   def test_all
-
     assert_equal 3, transaction_repository.all.size
   end
 
   def test_random
-
     assert_class = Transaction, transaction_repository.random
   end
 
   def test_find_by_transaction_id
-
     transaction = transaction_repository.find_by_id(1)
     assert_equal 1, transaction.id
   end
 
   def test_find_by_invoice_id
-
     transaction = transaction_repository.find_by_invoice_id(2)
     assert_equal 2, transaction.invoice_id
   end
 
   def test_find_by_credit_card_number
-
     transaction = transaction_repository.find_by_credit_card_number('4354495077693036')
     assert_equal '4354495077693036', transaction.credit_card_number
   end
 
   def test_find_by_credit_card_expiration
-
     transaction = transaction_repository.find_by_credit_card_expiration('2012-03-27 14:54:09')
     assert_equal '2012-03-27 14:54:09', transaction.credit_card_expiration
   end
 
   def test_find_by_result
-
     transaction = transaction_repository.find_by_result('success')
     assert_equal 'success', transaction.result
   end
 
   def test_find_all_by_transaction_id
-
     transactions = transaction_repository.find_all_by_transaction_id(2)
     transactions1= transaction_repository.find_all_by_transaction_id(3)
     assert_equal 1, transactions.size
@@ -88,14 +80,11 @@ def setup
   end
 
   def test_find_all_by_invoice_id
-
     transaction = transaction_repository.find_all_by_invoice_id(3)
     assert_equal 1, transaction.size
-
   end
 
   def test_find_all_by_credit_card_number
-
     transactions = transaction_repository.find_all_by_credit_card_number('')
     transactions1 = transaction_repository.find_all_by_credit_card_number('4654405418249632')
     assert_equal 0, transactions.size
@@ -103,7 +92,6 @@ def setup
   end
 
   def test_find_all_by_credit_card_expiration
-
     transactions = transaction_repository.find_all_by_credit_card_expiration('2012-03-27 14:54:09')
     transactions1 = transaction_repository.find_all_by_credit_card_expiration('')
     #puts "transactions #{transactions}"
@@ -112,7 +100,6 @@ def setup
   end
 
   def test_find_all_by_result
-
     transactions = transaction_repository.find_all_by_result('success')
     transactions1 = transaction_repository.find_all_by_result('fail')
     assert_equal 2, transactions.size

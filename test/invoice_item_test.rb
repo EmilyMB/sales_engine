@@ -2,7 +2,6 @@ require_relative '../lib/invoice_item'
 require_relative 'test_helper'
 
 class InvoiceItemTest < Minitest::Test
-
   attr_reader :parent, :id, :item_id, :invoice_id, :quantity, :unit_price, :created_at, :updated_at, :invoice_item
 
   def setup

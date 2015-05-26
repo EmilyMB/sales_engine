@@ -2,9 +2,7 @@ require_relative '../lib/customer_repository'
 require_relative 'test_helper'
 
 class CustomerRespositoryTest < Minitest::Test
-
   attr_reader :sales_engine, :customer_repo, :data
-
 
   def setup
     @data = [{id: 45, first_name: "bob", last_name: "jones", created_at: "2010-01-01", updated_at: "2014-01-01" },

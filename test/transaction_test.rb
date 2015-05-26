@@ -4,9 +4,6 @@ require_relative '../lib/transaction'
 class TransactionTest < Minitest::Test
   attr_reader :transaction, :data, :repository
 
-  def test_it_exists
-  end
-
   def setup
     @data = {
       id: '1',
@@ -37,6 +34,4 @@ class TransactionTest < Minitest::Test
     transaction.invoice
     repository.verify
   end
-
-  
 end

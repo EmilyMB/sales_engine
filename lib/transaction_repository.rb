@@ -95,5 +95,4 @@ class TransactionRepository
   def find_invoice_from(invoice_id)
     sales_engine.find_invoice_from(invoice_id)
   end
-
 end

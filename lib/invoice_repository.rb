@@ -2,7 +2,6 @@ require_relative 'invoice'
 require_relative 'office_repository'
 
 class InvoiceRepository < OfficeRepository
-
   attr_reader :data, :sales_engine
 
   def initialize(invoice, parent)

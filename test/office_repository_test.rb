@@ -2,7 +2,6 @@ require_relative '../lib/office_repository'
 require_relative 'test_helper'
 
 class OfficeRepoTest < Minitest::Test
-
   def setup
     @data = [{id: 1, created_at:"2012-03-27 14:54:09 UTC", updated_at: "2012-03-27 14:54:09 UTC"},
       {id: 2, created_at: "2012-03-27 14:54:09 UTC", updated_at: "2012-03-27 14:54:09 UTC"},
