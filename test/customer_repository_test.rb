@@ -6,22 +6,28 @@ class CustomerRespositoryTest < Minitest::Test
 
   def setup
     @data = [
-              { id: 45,
-                first_name: "bob",
-                last_name: "jones",
-                created_at: "2010-01-01",
-                updated_at: "2014-01-01" },
-              { id: 46,
-                first_name: "jane",
-                last_name: "Jones",
-                created_at: "2012-01-01",
-                updated_at: "2015-01-01" },
-              { id: 47,
-                first_name: "may",
-                last_name: "johnson",
-                created_at: "2011-01-01",
-                updated_at: "2014-01-01" }
-             ]
+      {
+        id: 45,
+        first_name: "bob",
+        last_name: "jones",
+        created_at: "2010-01-01",
+        updated_at: "2014-01-01"
+      },
+      {
+        id: 46,
+        first_name: "jane",
+        last_name: "Jones",
+        created_at: "2012-01-01",
+        updated_at: "2015-01-01"
+      },
+      {
+        id: 47,
+        first_name: "may",
+        last_name: "johnson",
+        created_at: "2011-01-01",
+        updated_at: "2014-01-01"
+      }
+    ]
     @sales_engine = Minitest::Mock.new
     @customer_repo = CustomerRepository.new(data, sales_engine)
   end
