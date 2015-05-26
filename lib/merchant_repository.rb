@@ -3,7 +3,7 @@ require_relative "csv_reader"
 require "date"
 
 class MerchantRepository
-  attr_reader :merchants, :sales_engine  # => nil
+  attr_reader :merchants, :sales_engine
 
   def initialize(merchants = "", sales_engine)
     @sales_engine = sales_engine
