@@ -42,7 +42,3 @@ class CustomerTest < Minitest::Test
     parent.verify
   end
 end
-
-# invoices returns a collection of Invoice instances associated with this object.
-#transactions returns an array of Transaction instances associated with the customer
-#favorite_merchant returns an instance of Merchant where the customer has conducted the most successful transactions
