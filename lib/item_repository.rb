@@ -1,10 +1,10 @@
-require_relative 'item'        # => true
-require_relative 'csv_reader'  # => true
+require_relative "item"        # => true
+require_relative "csv_reader"  # => true
 
 class ItemRepository
   attr_reader :sales_engine, :items  # => nil
 
-  def initialize(items = '', sales_engine)
+  def initialize(items = "", sales_engine)
     @sales_engine = sales_engine
     @items ||= items.map {|item| Item.new(item, self)}
   end

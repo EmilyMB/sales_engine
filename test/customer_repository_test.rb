@@ -1,5 +1,5 @@
-require_relative '../lib/customer_repository'
-require_relative 'test_helper'
+require_relative "../lib/customer_repository"
+require_relative "test_helper"
 
 class CustomerRespositoryTest < Minitest::Test
   attr_reader :sales_engine, :customer_repo, :data

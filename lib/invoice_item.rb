@@ -1,5 +1,5 @@
-require 'date'
-require 'bigdecimal'
+require "date"
+require "bigdecimal"
 
 class InvoiceItem
   attr_reader :id, :item_id, :invoice_id, :quantity,

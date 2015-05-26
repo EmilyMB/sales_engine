@@ -1,5 +1,5 @@
-require_relative 'customer'
-require_relative 'office_repository'
+require_relative "customer"
+require_relative "office_repository"
 
 class CustomerRepository < OfficeRepository
   attr_reader :sales_engine, :customer_repo
@@ -14,19 +14,19 @@ class CustomerRepository < OfficeRepository
   end
 
   def find_by_last_name(criteria)
-    generic_find('last_name', criteria)
+    generic_find("last_name", criteria)
   end
 
   def find_by_first_name(criteria)
-    generic_find('first_name', criteria)
+    generic_find("first_name", criteria)
   end
 
   def find_all_by_last_name(criteria)
-    generic_find_all('last_name', criteria)
+    generic_find_all("last_name", criteria)
   end
 
   def find_all_by_first_name(criteria)
-    generic_find_all('first_name', criteria)
+    generic_find_all("first_name", criteria)
   end
 
   def find_invoices_from(id)

@@ -1,5 +1,5 @@
-require_relative 'test_helper'
-require_relative '../lib/merchant_repository'
+require_relative "test_helper"
+require_relative "../lib/merchant_repository"
 
 class MerchantRepositoryTest < Minitest::Test
   attr_reader :merchants, :merchant_repository, :sales_engine
@@ -7,21 +7,21 @@ class MerchantRepositoryTest < Minitest::Test
   def setup
     @merchants = [{
       id: 3,
-      name: 'Willms and Sons',
-      created_at: '2012-03-27 14:53:59 UTC',
-      updated_at: '2012-03-27 14:53:59 UTC'
+      name: "Willms and Sons",
+      created_at: "2012-03-27 14:53:59 UTC",
+      updated_at: "2012-03-27 14:53:59 UTC"
     },
     {
       id: 2,
-      name: 'Klein, Rempel and Jones',
-      created_at: '2012-03-27 14:53:59 UTC',
-      updated_at: '2012-03-27 14:53:59 UTC'
+      name: "Klein, Rempel and Jones",
+      created_at: "2012-03-27 14:53:59 UTC",
+      updated_at: "2012-03-27 14:53:59 UTC"
     },
     {
       id: 7,
-      name: 'Bernhard-Johns',
-      created_at: '2012-03-27 14:53:59 UTC',
-      updated_at: '2012-03-27 14:53:59 UTC'
+      name: "Bernhard-Johns",
+      created_at: "2012-03-27 14:53:59 UTC",
+      updated_at: "2012-03-27 14:53:59 UTC"
     }
     ]
 
@@ -43,8 +43,8 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_find_by_name
-    merchant = merchant_repository.find_by_name('Bernhard-Johns')
-    assert_equal 'Bernhard-Johns', merchant.name
+    merchant = merchant_repository.find_by_name("Bernhard-Johns")
+    assert_equal "Bernhard-Johns", merchant.name
   end
 
   def test_find_all_by_merchant_id
@@ -55,8 +55,8 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_find_all_by_name
-    merchant = merchant_repository.find_all_by_name('Bernhard-Johns')
-    merchant1 = merchant_repository.find_all_by_name('Klein, Rempel and Jones')
+    merchant = merchant_repository.find_all_by_name("Bernhard-Johns")
+    merchant1 = merchant_repository.find_all_by_name("Klein, Rempel and Jones")
     assert_equal 1, merchant.size
     assert_equal 1, merchant1.size
   end
@@ -74,8 +74,8 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_it_delegates_revenue_to_sales_engine
-    sales_engine.expect(:find_revenue_from_merchant, nil, [2, 'all'])
-    merchant_repository.find_revenue_by_merchant(2, 'all')
+    sales_engine.expect(:find_revenue_from_merchant, nil, [2, "all"])
+    merchant_repository.find_revenue_by_merchant(2, "all")
     sales_engine.verify
   end
 

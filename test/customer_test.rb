@@ -1,5 +1,5 @@
-require_relative '../lib/customer'
-require_relative 'test_helper'
+require_relative "../lib/customer"
+require_relative "test_helper"
 
 class CustomerTest < Minitest::Test
   attr_reader :data, :customer, :parent
@@ -18,8 +18,8 @@ class CustomerTest < Minitest::Test
 
   def test_customer_attributes
     assert_equal 45, customer.id
-    assert_equal 'bob', customer.first_name
-    assert_equal 'jones', customer.last_name
+    assert_equal "bob", customer.first_name
+    assert_equal "jones", customer.last_name
     assert_equal "2010-01-01", customer.created_at
     assert_equal "2014-01-01", customer.updated_at
   end

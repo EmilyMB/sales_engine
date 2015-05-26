@@ -1,5 +1,5 @@
-require_relative '../lib/office_repository'
-require_relative 'test_helper'
+require_relative "../lib/office_repository"
+require_relative "test_helper"
 
 class OfficeRepoTest < Minitest::Test
   def setup

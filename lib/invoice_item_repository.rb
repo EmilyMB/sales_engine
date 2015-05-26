@@ -1,5 +1,5 @@
-require_relative 'invoice_item'
-require_relative 'office_repository'
+require_relative "invoice_item"
+require_relative "office_repository"
 
 class InvoiceItemRepository < OfficeRepository
   attr_reader :sales_engine, :data

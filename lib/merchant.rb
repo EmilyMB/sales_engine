@@ -17,7 +17,7 @@ class Merchant
     repository.find_invoices_by_merchant(id)
   end
 
-  def revenue(date = 'all')
+  def revenue(date = "all")
     repository.find_revenue_by_merchant(id, date)
   end
 

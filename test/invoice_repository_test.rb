@@ -1,5 +1,5 @@
-require_relative '../lib/invoice_repository'
-require_relative 'test_helper'
+require_relative "../lib/invoice_repository"
+require_relative "test_helper"
 
 class InvoiceRepoTest < Minitest::Test
   attr_reader :data, :invoice_repo, :sales_engine

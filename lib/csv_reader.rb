@@ -1,4 +1,4 @@
-require 'csv'
+require "csv"
 
 class CsvReader
   def self.load_csv(filename)
