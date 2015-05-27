@@ -1,6 +1,6 @@
 require_relative "office_obj"
-class OfficeRepository
 
+class OfficeRepository
   attr_reader :data
 
   def initialize(data)

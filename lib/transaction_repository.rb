@@ -1,10 +1,10 @@
-require_relative 'transaction'
-require_relative 'csv_reader'
+require_relative "transaction"
+require_relative "csv_reader"
 
 class TransactionRepository
   attr_reader :merchant, :sales_engine, :transactions
 
-  def initialize(transactions = '', sales_engine)
+  def initialize(transactions = "", sales_engine)
     @sales_engine = sales_engine
     @transactions ||= transactions.map do |transaction|
       Transaction.new(transaction, self)
@@ -95,5 +95,4 @@ class TransactionRepository
   def find_invoice_from(invoice_id)
     sales_engine.find_invoice_from(invoice_id)
   end
-
 end

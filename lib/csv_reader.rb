@@ -1,7 +1,6 @@
-require 'csv'
+require "csv"
 
 class CsvReader
-
   def self.load_csv(filename)
     path = File.expand_path("./csvs/")
     file = File.join(path, filename)

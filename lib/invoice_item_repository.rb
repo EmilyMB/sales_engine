@@ -1,10 +1,8 @@
-require_relative 'invoice_item'
-require_relative 'office_repository'
+require_relative "invoice_item"
+require_relative "office_repository"
 
 class InvoiceItemRepository < OfficeRepository
-
   attr_reader :sales_engine, :data
-
 
   def initialize(invoice_items, parent)
     @data ||= invoice_items.map {|inv_item| InvoiceItem.new(inv_item, self)}

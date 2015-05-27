@@ -1,11 +1,10 @@
-require 'csv'                               # => true
-require_relative 'merchant_repository'      # => true
-require_relative 'invoice_repository'       # => true
-require_relative 'invoice_item_repository'  # => true
-require_relative 'item_repository'          # => true
-require_relative 'customer_repository'      # => true
-require_relative 'transaction_repository'   # => true
-
+require "csv"
+require_relative "merchant_repository"
+require_relative "invoice_repository"
+require_relative "invoice_item_repository"
+require_relative "item_repository"
+require_relative "customer_repository"
+require_relative "transaction_repository"
 
 class SalesEngine
   attr_reader :parent,
@@ -157,7 +156,7 @@ class SalesEngine
 
   def find_successful_invoices_from_merchant(id, date)
     all_invoices = merchant_repository.find_invoices_by_merchant(id)
-    if date == 'all'
+    if date == "all"
       invoice_ids = all_invoices.map(&:id)
     else
       invoice_ids = all_invoices.map do |invoice|
@@ -170,7 +169,7 @@ class SalesEngine
     end
 
     successful_ids = all_transactions.flatten.map do |transaction|
-       transaction.invoice_id unless transaction.result != ('success')
+      transaction.invoice_id unless transaction.result != ("success")
     end
 
     invoice_items = successful_ids.map do |invoice_id|
@@ -269,7 +268,7 @@ class SalesEngine
     end
 
     successful_ids = all_transactions.flatten.map do |transaction|
-       transaction.invoice_id unless transaction.result != ('success')
+      transaction.invoice_id unless transaction.result != ("success")
     end
 
     invoice_items = successful_ids.map do |invoice_id|

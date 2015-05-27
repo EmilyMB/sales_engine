@@ -1,8 +1,7 @@
-require_relative '../lib/customer'
-require_relative 'test_helper'
+require_relative "../lib/customer"
+require_relative "test_helper"
 
 class CustomerTest < Minitest::Test
-
   attr_reader :data, :customer, :parent
 
   def setup
@@ -19,8 +18,8 @@ class CustomerTest < Minitest::Test
 
   def test_customer_attributes
     assert_equal 45, customer.id
-    assert_equal 'bob', customer.first_name
-    assert_equal 'jones', customer.last_name
+    assert_equal "bob", customer.first_name
+    assert_equal "jones", customer.last_name
     assert_equal "2010-01-01", customer.created_at
     assert_equal "2014-01-01", customer.updated_at
   end
@@ -43,7 +42,3 @@ class CustomerTest < Minitest::Test
     parent.verify
   end
 end
-
-# invoices returns a collection of Invoice instances associated with this object.
-#transactions returns an array of Transaction instances associated with the customer
-#favorite_merchant returns an instance of Merchant where the customer has conducted the most successful transactions

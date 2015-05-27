@@ -21,7 +21,7 @@ namespace :sanitation do
   task :all => [:lines, :methods]
 end
 
-require 'rake/testtask'
+require "rake/testtask"
 desc "Runs the tests"
 Rake::TestTask.new do |t|
   t.pattern = "test/*_test.rb"
