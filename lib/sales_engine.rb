@@ -73,15 +73,16 @@ class SalesEngine
 
   def find_transactions_from_customer(id)
     all_invoices = find_invoices_from_customer(id)
-    all_invoice_ids = all_invoices.map(&:id)
-    all_transactions = all_invoice_ids.map do |invoice_id|
-      transaction_repository.find_all_by_invoice_id(invoice_id)
-    end
+    find_transactions_from_invoices(all_invoices)
   end
 
   def find_transactions_from_merchant(id)
     all_invoices = find_invoices_from_merchant(id)
-    all_invoice_ids = all_invoices.map(&:id)
+    find_transactions_from_invoices(all_invoices)
+  end
+
+  def find_transactions_from_invoices(invoices)
+    all_invoice_ids = invoices.map(&:id)
     all_transactions = all_invoice_ids.map do |invoice_id|
       transaction_repository.find_all_by_invoice_id(invoice_id)
     end
@@ -89,21 +90,19 @@ class SalesEngine
 
   def find_successful_transactions(transactions)
     transactions.flatten.select do |transaction|
-      transaction unless transaction.result != "success"
+      transaction if transaction.result == "success"
     end
   end
 
   def find_favorite_merchant_from_customer(id)
-    all_transactions = find_transactions_from_customer(id)
-    successes = find_successful_transactions(all_transactions)
-    success_invoice_ids = successes.map(&:invoice_id)
-    success_merchant_ids = success_invoice_ids.map do |invoice_id|
+    transactions = find_transactions_from_customer(id)
+    successes = find_successful_transactions(transactions)
+    invoice_ids = successes.map(&:invoice_id)
+    merchant_ids = invoice_ids.map do |invoice_id|
        invoice_repository.find_all_by_id(invoice_id).map(&:merchant_id)
     end
-    fav_merch = success_merchant_ids.max_by do |id|
-       success_merchant_ids.count(id)
-     end
-    merchant_repository.find_by_merchant_id(fav_merch.first)
+    fav_merch = merchant_ids.max_by { |id| merchant_ids.count(id) }
+    merchant_repository.find_by_id(fav_merch.first)
   end
 
   def find_item_from(id)
@@ -123,7 +122,7 @@ class SalesEngine
   end
 
   def find_merchant_from(id)
-    merchant_repository.find_by_merchant_id(id)
+    merchant_repository.find_by_id(id)
   end
 
   def find_transactions_from_invoice(id)
@@ -146,56 +145,68 @@ class SalesEngine
     invoice_repository.find_by_id(id)
   end
 
-
-  def find_successful_invoices_from_merchant(id, date)
+  def find_invoice_ids_by_merchant_and_date(merchant_id, date)
     all_invoices = merchant_repository.find_invoices_by_merchant(id)
     if date == "all"
       invoice_ids = all_invoices.map(&:id)
     else
       invoice_ids = all_invoices.map do |invoice|
-        invoice.id unless invoice.created_at != date
+        invoice.id if invoice.created_at == date
       end
     end
+  end
 
-    all_transactions = invoice_ids.map do |invoice_id|
+  def find_transactions_from_invoice_ids(invoice_ids)
+    invoice_ids.map do |invoice_id|
       transaction_repository.find_all_by_invoice_id(invoice_id)
     end
+  end
 
-    successful_ids = all_transactions.flatten.map do |transaction|
-      transaction.invoice_id unless transaction.result != ("success")
+  def find_successful_invoice_ids_from_transactions(transactions)
+    transactions.flatten.map do |transaction|
+      transaction.invoice_id if transaction.result == ("success")
     end
+  end
 
-    invoice_items = successful_ids.map do |invoice_id|
+  def invoice_items_from_invoice_ids(invoice_ids)
+    invoice_ids.map do |invoice_id|
       invoice_item_repository.find_all_by_invoice_id(invoice_id)
     end
-    return (invoice_items)
+  end
+
+  def find_successful_invoice_items_from_merchant(id, date)
+    invoice_ids = find_invoice_ids_by_merchant_and_date(id, date)
+    all_transactions = find_transactions_from_invoice_ids(invoice_ids)
+    invoices = find_successful_invoice_ids_from_transactions(all_transactions)
+    invoice_items_from_invoice_ids(invoices)
   end
 
   def find_revenue_from_merchant(id, date)
     revenue = 0
-    find_successful_invoices_from_merchant(id, date).flatten.each do |invoice_item|
+    find_successful_invoice_items_from_merchant(id, date).flatten.each do |invoice_item|
         revenue = revenue + invoice_item.unit_price * invoice_item.quantity
     end
     revenue
   end
 
   def find_count_items_from_merchant(id, date="all")
-    count = find_successful_invoices_from_merchant(id, date).flatten.reduce(0) do |count, invoice_item|
+    count = find_successful_invoice_items_from_merchant(id, date).flatten.reduce(0) do |count, invoice_item|
        count + invoice_item.quantity
     end
     count
   end
 
-  def find_favorite_customer_from_merchant(id)
-    all_transactions = find_transactions_from_merchant(id)
-    successes = find_successful_transactions(all_transactions)
-    success_invoice_ids = successes.map(&:invoice_id)
-    success_customer_ids = success_invoice_ids.map do |invoice_id|
+  def find_customer_ids_by_invoices(invoice_ids)
+    invoice_ids.map do |invoice_id|
        invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
     end
-    fav_customer = success_customer_ids.max_by do |id|
-      success_customer_ids.count(id)
-    end
+  end
+
+  def find_favorite_customer_from_merchant(id)
+    transactions = find_transactions_from_merchant(id)
+    invoice_ids = find_successful_invoice_ids_from_transactions(transactions)
+    customer_ids = find_customer_ids_by_invoices(invoice_ids)
+    fav_customer = customer_ids.max_by { |id| customer_ids.count(id) }
     customer_repository.find_by_id(fav_customer.first)
   end
 
@@ -235,7 +246,7 @@ class SalesEngine
   def find_most_revenue_from_merchant_repository(x)
     merchant_ids = merchant_revenue.sort[-x..-1].collect { |i| i[1] }
     merchants = merchant_ids.map do |merchant_id|
-      merchant_repository.find_by_merchant_id(merchant_id)
+      merchant_repository.find_by_id(merchant_id)
     end
     merchants.reverse
   end
@@ -243,7 +254,7 @@ class SalesEngine
   def find_most_items_sold_from_merchant_repository(x)
     merchant_ids = merchant_items.sort[-x..-1].collect { |i| i[1] }
     merchants = merchant_ids.map do |merchant_id|
-      merchant_repository.find_by_merchant_id(merchant_id)
+      merchant_repository.find_by_id(merchant_id)
     end
     merchants.reverse
   end
@@ -252,14 +263,15 @@ class SalesEngine
     merchant_revenue(date).collect { |i| i[0] }.reduce(:+)
   end
 
-  def find_most_revenue_items(x)
-
+  def all_transactions
     all_invoices = invoice_repository.all
-      invoice_ids = all_invoices.map(&:id)
-    all_transactions = invoice_ids.map do |invoice_id|
+    invoice_ids = all_invoices.map(&:id)
+    invoice_ids.map do |invoice_id|
       transaction_repository.find_all_by_invoice_id(invoice_id)
     end
+  end
 
+  def find_most_revenue_items(x)
     successful_ids = all_transactions.flatten.map do |transaction|
       transaction.invoice_id unless transaction.result != ("success")
     end
@@ -275,7 +287,6 @@ class SalesEngine
     item_hash = items_revenue.group_by{ |n| n[1] }
     item_revenue = []
     for n in 1..10000
-
       unless item_hash[n].nil?
         item_revenue << [item_hash[n].collect{ |n| n[0] }.reduce(:+), item_hash[n].flatten[1]]
       end
@@ -286,5 +297,8 @@ class SalesEngine
       item_repository.find_by_item_id(item_id)
     end
     return items.reverse
+  end
+
+  def find_most_popular_items(x)
   end
 end

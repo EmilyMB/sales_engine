@@ -39,7 +39,7 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_find_by_merchant_id
-    merchant = merchant_repository.find_by_merchant_id(7)
+    merchant = merchant_repository.find_by_id(7)
 
     assert_equal 7, merchant.id
   end
