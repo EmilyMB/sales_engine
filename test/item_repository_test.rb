@@ -68,6 +68,7 @@ class ItemRepositoryTest < Minitest::Test
 
   def test_find_by_unit_price
     price = BigDecimal.new("31163") / 100
+
     item = item_repository.find_by_unit_price(price)
 
     assert_equal price, item.unit_price
