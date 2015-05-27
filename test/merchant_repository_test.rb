@@ -2,27 +2,28 @@ require_relative "test_helper"
 require_relative "../lib/merchant_repository"
 
 class MerchantRepositoryTest < Minitest::Test
-  attr_reader :merchants, :merchant_repository, :sales_engine
+  attr_reader :merchant_repository, :sales_engine
 
   def setup
-    @merchants = [{
-      id: 3,
-      name: "Willms and Sons",
-      created_at: "2012-03-27 14:53:59 UTC",
-      updated_at: "2012-03-27 14:53:59 UTC"
-    },
-    {
-      id: 2,
-      name: "Klein, Rempel and Jones",
-      created_at: "2012-03-27 14:53:59 UTC",
-      updated_at: "2012-03-27 14:53:59 UTC"
-    },
-    {
-      id: 7,
-      name: "Bernhard-Johns",
-      created_at: "2012-03-27 14:53:59 UTC",
-      updated_at: "2012-03-27 14:53:59 UTC"
-    }
+    merchants = [
+      {
+        id: 3,
+        name: "Willms and Sons",
+        created_at: "2012-03-27 14:53:59 UTC",
+        updated_at: "2012-03-27 14:53:59 UTC"
+      },
+      {
+        id: 2,
+        name: "Klein, Rempel and Jones",
+        created_at: "2012-03-27 14:53:59 UTC",
+        updated_at: "2012-03-27 14:53:59 UTC"
+      },
+      {
+        id: 7,
+        name: "Bernhard-Johns",
+        created_at: "2012-03-27 14:53:59 UTC",
+        updated_at: "2012-03-27 14:53:59 UTC"
+      }
     ]
 
     @sales_engine = Minitest::Mock.new
@@ -39,17 +40,20 @@ class MerchantRepositoryTest < Minitest::Test
 
   def test_find_by_merchant_id
     merchant = merchant_repository.find_by_merchant_id(7)
+
     assert_equal 7, merchant.id
   end
 
   def test_find_by_name
     merchant = merchant_repository.find_by_name("Bernhard-Johns")
+
     assert_equal "Bernhard-Johns", merchant.name
   end
 
   def test_find_all_by_merchant_id
     merchant = merchant_repository.find_all_by_merchant_id(2)
     merchant1 = merchant_repository.find_all_by_merchant_id(7)
+
     assert_equal 1, merchant.size
     assert_equal 1, merchant1.size
   end
@@ -57,6 +61,7 @@ class MerchantRepositoryTest < Minitest::Test
   def test_find_all_by_name
     merchant = merchant_repository.find_all_by_name("Bernhard-Johns")
     merchant1 = merchant_repository.find_all_by_name("Klein, Rempel and Jones")
+
     assert_equal 1, merchant.size
     assert_equal 1, merchant1.size
   end
@@ -104,13 +109,19 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_it_most_items_sold_to_sales_engine
-    sales_engine.expect(:find_most_items_sold_from_merchant_repository, nil, [2])
+    sales_engine.expect(:find_most_items_sold_from_merchant_repository,
+      nil,
+      [2]
+    )
     merchant_repository.most_items(2)
     sales_engine.verify
   end
 
   def test_it_delegates_revenue_to_sales_engine
-    sales_engine.expect(:find_revenue_by_date_from_merchant_repository, nil, [Date.parse("2013-01-01")])
+    sales_engine.expect(:find_revenue_by_date_from_merchant_repository,
+      nil,
+      [Date.parse("2013-01-01")]
+    )
     merchant_repository.revenue(Date.parse("2013-01-01"))
     sales_engine.verify
   end

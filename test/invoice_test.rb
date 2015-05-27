@@ -62,13 +62,13 @@ class InvoiceTest < Minitest::Test
 
   def test_delegates_charge_to_parent_repo
     parent.expect(:create_transaction_from,
-      nil,
-      [45, "4444333322221111", "10/13",  "success"]
-    )
+                  nil,
+                  [45, "4444333322221111", "10/13",  "success"]
+                 )
     invoice.charge(credit_card_number: "4444333322221111",
-      credit_card_expiration: "10/13",
-      result: "success"
-    )
+                   credit_card_expiration: "10/13",
+                   result: "success"
+                  )
     parent.verify
   end
 end

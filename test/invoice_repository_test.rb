@@ -59,19 +59,19 @@ class InvoiceRepoTest < Minitest::Test
 
   def test_it_delegates_create_transaction_to_sales_engine
     sales_engine.expect(:create_transaction_from_invoice,
-      nil,
-      [
-        1,
-        credit_card_number: "4444333322221111",
-        credit_card_expiration: "10/13",
-        result: "success"
-      ]
-    )
+                        nil,
+                        [
+                          1,
+                          credit_card_number: "4444333322221111",
+                          credit_card_expiration: "10/13",
+                          result: "success"
+                        ]
+                       )
     invoice_repo.create_transaction_from(1,
-      credit_card_number: "4444333322221111",
-      credit_card_expiration: "10/13",
-      result: "success"
-    )
+                                         credit_card_number: "4444333322221111",
+                                         credit_card_expiration: "10/13",
+                                         result: "success"
+                                        )
     sales_engine.verify
   end
 

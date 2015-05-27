@@ -2,7 +2,7 @@ require_relative "test_helper"
 require_relative "../lib/sales_engine"
 
 class SalesEngineTest < Minitest::Test
-  attr_reader :sales_engine #:invoice_repository
+  attr_reader :sales_engine
 
   def sales_engine
     @sales_engine ||= SalesEngine.new
@@ -14,31 +14,37 @@ class SalesEngineTest < Minitest::Test
 
   def test_a_sales_engine_has_a_customer_repository
     sales_engine.startup_customer
+
     assert sales_engine.customer_repository
   end
 
   def test_a_sales_engine_has_an_invoice_repository
     sales_engine.startup_invoice
+
     assert sales_engine.invoice_repository
   end
 
   def test_a_sales_engine_has_an_invoice_item_repository
     sales_engine.startup_invoice_item
+
     assert sales_engine.invoice_item_repository
   end
 
   def test_a_sales_engine_has_a_item_repository
     sales_engine.startup_item
+
     assert sales_engine.item_repository
   end
 
   def test_a_sales_engine_has_a_merchant_repository
     sales_engine.startup_merchant
+
     assert sales_engine.merchant_repository
   end
 
   def test_a_sales_engine_has_a_transaction_repository
     sales_engine.startup_transaction
+
     assert sales_engine.transaction_repository
   end
 
@@ -48,11 +54,9 @@ class SalesEngineTest < Minitest::Test
 
   def test_it_finds_transactions_from_customer_id
     assert sales_engine.respond_to?(:find_transactions_from_customer)
-    #sales_engine.find_transactions_from_customer("1")
   end
 
   def test_it_finds_favorite_merchant_from_customer_id
-    # sales_engine.find_favorite_merchant_from_customer("1")
     assert sales_engine.respond_to?(:find_favorite_merchant_from_customer)
   end
 
@@ -119,9 +123,4 @@ class SalesEngineTest < Minitest::Test
   def test_it_finds_highest_revenue_items
     assert sales_engine.respond_to?(:find_most_revenue_items)
   end
-  # def test_it_delegates_invoice_to_invoice_repository
-  #   invoice_repository.expect(:find_all_by_merchant_id, nil, [7])
-  #   sales_engine.find_invoices_from_merchant(7)
-  #   invoice_repository.verify
-  # end
 end
