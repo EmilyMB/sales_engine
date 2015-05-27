@@ -22,7 +22,7 @@ class ItemTest < Minitest::Test
     assert_equal 4, item.id
     assert_equal "Nemo Facere", item.name
     assert_equal "Sunt eum id eius magni consequuntur delectus veritatis.",
-      item.description
+                 item.description
     assert_equal BigDecimal.new("4291") / 100, item.unit_price
     assert_equal 1, item.merchant_id
     assert_equal "2012-03-27 14:53:59 UTC", item.created_at

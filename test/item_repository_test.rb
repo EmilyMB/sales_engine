@@ -44,7 +44,7 @@ class ItemRepositoryTest < Minitest::Test
   end
 
   def test_random
-    assert_class = Item, item_repository.random
+    assert_equal Item, item_repository.random.class
   end
 
   def test_find_by_item_id
