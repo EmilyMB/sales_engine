@@ -4,7 +4,7 @@ class OfficeRepository
   attr_reader :data
 
   def initialize(data)
-    @data ||= data.map {|data| OfficeObj.new(data)}
+    @data ||= data.map { |data| OfficeObj.new(data) }
   end
 
   def inspect
@@ -26,7 +26,7 @@ class OfficeRepository
   end
 
   def generic_non_string_find(attribute, criteria)
-    data.find {|office_obj| office_obj.send(attribute.to_sym) == criteria}
+    data.find { |office_obj| office_obj.send(attribute.to_sym) == criteria }
   end
 
   def find_by_id(criteria)

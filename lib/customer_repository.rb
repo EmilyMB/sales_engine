@@ -5,7 +5,7 @@ class CustomerRepository < OfficeRepository
   attr_reader :sales_engine, :customer_repo
 
   def initialize(customers, parent)
-    @data ||= customers.map {|customer| Customer.new(customer, self)}
+    @data ||= customers.map { |customer| Customer.new(customer, self) }
     @sales_engine = parent
   end
 

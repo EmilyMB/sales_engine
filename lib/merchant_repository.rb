@@ -7,7 +7,7 @@ class MerchantRepository
 
   def initialize(merchants = "", sales_engine)
     @sales_engine = sales_engine
-    @merchants ||= merchants.map {|merchant| Merchant.new(merchant, self)}
+    @merchants ||= merchants.map { |merchant| Merchant.new(merchant, self) }
   end
 
   def inspect

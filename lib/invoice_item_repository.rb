@@ -5,7 +5,7 @@ class InvoiceItemRepository < OfficeRepository
   attr_reader :sales_engine, :data
 
   def initialize(invoice_items, parent)
-    @data ||= invoice_items.map {|inv_item| InvoiceItem.new(inv_item, self)}
+    @data ||= invoice_items.map { |inv_item| InvoiceItem.new(inv_item, self) }
     @sales_engine = parent
   end
 

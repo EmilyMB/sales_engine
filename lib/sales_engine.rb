@@ -14,7 +14,6 @@ class SalesEngine
               :item_repository,
               :merchant_repository,
               :transaction_repository
-              # :success_transactions_repository
 
   def initialize
     @parent = self
@@ -31,37 +30,31 @@ class SalesEngine
 
   def startup_customer
     customers = CsvReader.load_csv("customers.csv")
-    # customers = CsvReader.load_csv("customers_fixture.csv")
     @customer_repository = CustomerRepository.new(customers, parent)
   end
 
   def startup_invoice
     invoice = CsvReader.load_csv("invoices.csv")
-    # invoice = CsvReader.load_csv("invoices_fixture.csv")
     @invoice_repository = InvoiceRepository.new(invoice, parent)
   end
 
   def startup_invoice_item
     invoice_item = CsvReader.load_csv("invoice_items.csv")
-    # invoice_item = CsvReader.load_csv("invoice_items_fixture.csv")
     @invoice_item_repository = InvoiceItemRepository.new(invoice_item, parent)
   end
 
   def startup_item
     item = CsvReader.load_csv("items.csv")
-    # item = CsvReader.load_csv("items_fixture.csv")
     @item_repository = ItemRepository.new(item, parent)
   end
 
   def startup_merchant
     merchant = CsvReader.load_csv("merchants.csv")
-    # merchant = CsvReader.load_csv("merchants_fixture.csv")
     @merchant_repository = MerchantRepository.new(merchant, parent)
   end
 
   def startup_transaction
     transaction = CsvReader.load_csv("transactions.csv")
-    # transaction = CsvReader.load_csv("transactions_fixture.csv")
     @transaction_repository = TransactionRepository.new(transaction, parent)
   end
 
@@ -75,7 +68,7 @@ class SalesEngine
 
   def find_items_from_invoice(id)
     items = find_invoice_items_from_invoice(id)
-    items.map{|item| find_item_from(item.item_id)}
+    items.map{ |item| find_item_from(item.item_id) }
   end
 
   def find_transactions_from_customer(id)
@@ -240,7 +233,7 @@ class SalesEngine
   end
 
   def find_most_revenue_from_merchant_repository(x)
-    merchant_ids = merchant_revenue.sort[-x..-1].collect {|i| i[1]}
+    merchant_ids = merchant_revenue.sort[-x..-1].collect { |i| i[1] }
     merchants = merchant_ids.map do |merchant_id|
       merchant_repository.find_by_merchant_id(merchant_id)
     end
@@ -248,7 +241,7 @@ class SalesEngine
   end
 
   def find_most_items_sold_from_merchant_repository(x)
-    merchant_ids = merchant_items.sort[-x..-1].collect {|i| i[1]}
+    merchant_ids = merchant_items.sort[-x..-1].collect { |i| i[1] }
     merchants = merchant_ids.map do |merchant_id|
       merchant_repository.find_by_merchant_id(merchant_id)
     end
@@ -256,7 +249,7 @@ class SalesEngine
   end
 
   def find_revenue_by_date_from_merchant_repository(date)
-    merchant_revenue(date).collect {|i| i[0]}.reduce(:+)
+    merchant_revenue(date).collect { |i| i[0] }.reduce(:+)
   end
 
   def find_most_revenue_items(x)
@@ -288,7 +281,7 @@ class SalesEngine
       end
     end
 
-    item_ids = item_revenue.sort[-x..-1].collect {|i| i[1]}
+    item_ids = item_revenue.sort[-x..-1].collect { |i| i[1] }
     items = item_ids.map do |item_id|
       item_repository.find_by_item_id(item_id)
     end

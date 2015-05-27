@@ -6,7 +6,7 @@ class ItemRepository
 
   def initialize(items = "", sales_engine)
     @sales_engine = sales_engine
-    @items ||= items.map {|item| Item.new(item, self)}
+    @items ||= items.map { |item| Item.new(item, self) }
   end
 
   def inspect
