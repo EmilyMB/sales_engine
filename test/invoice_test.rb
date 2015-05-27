@@ -61,20 +61,14 @@ class InvoiceTest < Minitest::Test
   end
 
   def test_delegates_charge_to_parent_repo
-    parent.expect(:create_transaction_from, nil, [45, "4444333322221111", "10/13",  "success"])
-    invoice.charge(credit_card_number: "4444333322221111", credit_card_expiration: "10/13", result: "success")
+    parent.expect(:create_transaction_from,
+      nil,
+      [45, "4444333322221111", "10/13",  "success"]
+    )
+    invoice.charge(credit_card_number: "4444333322221111",
+      credit_card_expiration: "10/13",
+      result: "success"
+    )
     parent.verify
   end
 end
-
-
-# transactions returns a collection of associated Transaction instances
-# invoice_items returns a collection of associated InvoiceItem instances
-# items returns a collection of associated Items by way of InvoiceItem objects
-# customer returns an instance of Customer associated with this object
-# merchant returns an instance of Merchant associated with this object
-
-# invoice = invoice_repository.create(customer: customer, merchant: merchant, status: "shipped",
-# items: [item1, item2, item3])
-# invoice.charge(credit_card_number: "4444333322221111",
-# credit_card_expiration: "10/13", result: "success")
