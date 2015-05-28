@@ -84,15 +84,15 @@ class SalesEngineTest < Minitest::Test
   end
 
   def test_it_finds_most_revenue
-    assert sales_engine.respond_to?(:find_most_revenue_from_merchant_repository)
+    assert sales_engine.respond_to?(:find_most_revenue_from_merchant_repo)
   end
 
   def test_it_finds_most_items_from_merchant_repo
-    assert sales_engine.respond_to?(:find_most_items_sold_from_merchant_repository)
+    assert sales_engine.respond_to?(:find_most_items_sold_from_merchant_repo)
   end
 
   def test_it_finds_revenue_by_date
-    assert sales_engine.respond_to?(:find_revenue_by_date_from_merchant_repository)
+    assert sales_engine.respond_to?(:find_revenue_by_date_from_merchant_repo)
   end
 
   def test_it_finds_highest_revenue_items

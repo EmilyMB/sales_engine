@@ -59,14 +59,14 @@ class MerchantRepository
   end
 
   def most_revenue(x)
-    sales_engine.find_most_revenue_from_merchant_repository(x)
+    sales_engine.find_most_revenue_from_merchant_repo(x)
   end
 
   def most_items(x)
-    sales_engine.find_most_items_sold_from_merchant_repository(x)
+    sales_engine.find_most_items_sold_from_merchant_repo(x)
   end
 
   def revenue(date)
-    sales_engine.find_revenue_by_date_from_merchant_repository(date)
+    sales_engine.find_revenue_by_date_from_merchant_repo(date)
   end
 end

@@ -203,21 +203,21 @@ class SalesEngine
     merchant_items
   end
 
-  def find_most_revenue_from_merchant_repository(x)
+  def find_most_revenue_from_merchant_repo(x)
     merchant_ids = merchant_revenue.sort[-x..-1].collect { |i| i[1] }
     merchant_ids.reverse.map do |merchant_id|
       merchant_repository.find_by_id(merchant_id)
     end
   end
 
-  def find_most_items_sold_from_merchant_repository(x)
+  def find_most_items_sold_from_merchant_repo(x)
     merchant_ids = merchant_items.sort[-x..-1].collect { |i| i[1] }
     merchant_ids.reverse.map do |merchant_id|
       merchant_repository.find_by_id(merchant_id)
     end
   end
 
-  def find_revenue_by_date_from_merchant_repository(date)
+  def find_revenue_by_date_from_merchant_repo(date)
     merchant_revenue(date).collect { |i| i[0] }.reduce(:+)
   end
 
