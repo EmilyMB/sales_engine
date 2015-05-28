@@ -12,39 +12,14 @@ class SalesEngineTest < Minitest::Test
     assert sales_engine.respond_to?(:startup)
   end
 
-  def test_a_sales_engine_has_a_customer_repository
-    sales_engine.startup_customer
+  def test_a_sales_engine_has_repositories
+    sales_engine.startup
 
     assert sales_engine.customer_repository
-  end
-
-  def test_a_sales_engine_has_an_invoice_repository
-    sales_engine.startup_invoice
-
     assert sales_engine.invoice_repository
-  end
-
-  def test_a_sales_engine_has_an_invoice_item_repository
-    sales_engine.startup_invoice_item
-
     assert sales_engine.invoice_item_repository
-  end
-
-  def test_a_sales_engine_has_a_item_repository
-    sales_engine.startup_item
-
     assert sales_engine.item_repository
-  end
-
-  def test_a_sales_engine_has_a_merchant_repository
-    sales_engine.startup_merchant
-
     assert sales_engine.merchant_repository
-  end
-
-  def test_a_sales_engine_has_a_transaction_repository
-    sales_engine.startup_transaction
-
     assert sales_engine.transaction_repository
   end
 

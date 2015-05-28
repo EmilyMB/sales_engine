@@ -5,57 +5,23 @@ require_relative "invoice_item_repository"
 require_relative "item_repository"
 require_relative "customer_repository"
 require_relative "transaction_repository"
+require_relative "startup"
 
 class SalesEngine
-  attr_reader :parent,
-              :customer_repository,
+  attr_reader :customer_repository,
               :invoice_repository,
               :invoice_item_repository,
               :item_repository,
               :merchant_repository,
               :transaction_repository
 
-  def initialize
-    @parent = self
-  end
-
   def startup
-    startup_customer
-    startup_invoice
-    startup_invoice_item
-    startup_item
-    startup_merchant
-    startup_transaction
-  end
-
-  def startup_customer
-    customers = CsvReader.load_csv("customers.csv")
-    @customer_repository = CustomerRepository.new(customers, parent)
-  end
-
-  def startup_invoice
-    invoice = CsvReader.load_csv("invoices.csv")
-    @invoice_repository = InvoiceRepository.new(invoice, parent)
-  end
-
-  def startup_invoice_item
-    invoice_item = CsvReader.load_csv("invoice_items.csv")
-    @invoice_item_repository = InvoiceItemRepository.new(invoice_item, parent)
-  end
-
-  def startup_item
-    item = CsvReader.load_csv("items.csv")
-    @item_repository = ItemRepository.new(item, parent)
-  end
-
-  def startup_merchant
-    merchant = CsvReader.load_csv("merchants.csv")
-    @merchant_repository = MerchantRepository.new(merchant, parent)
-  end
-
-  def startup_transaction
-    transaction = CsvReader.load_csv("transactions.csv")
-    @transaction_repository = TransactionRepository.new(transaction, parent)
+    @customer_repository = Startup.customers(self)
+    @invoice_repository = Startup.invoices(self)
+    @invoice_item_repository = Startup.invoice_items(self)
+    @item_repository = Startup.items(self)
+    @merchant_repository = Startup.merchants(self)
+    @transaction_repository = Startup.transactions(self)
   end
 
   def find_invoices_from_customer(id)
@@ -162,12 +128,6 @@ class SalesEngine
     end
   end
 
-  def find_successful_invoice_ids_from_transactions(transactions)
-    transactions.flatten.map do |transaction|
-      transaction.invoice_id if transaction.result == ("success")
-    end
-  end
-
   def invoice_items_from_invoice_ids(invoice_ids)
     invoice_ids.map do |invoice_id|
       invoice_item_repository.find_all_by_invoice_id(invoice_id)
@@ -211,8 +171,8 @@ class SalesEngine
   end
 
   def find_pending_customers_from_merchant(id)
-    all_transactions = find_transactions_from_merchant(id)
-    all_invoice_ids = all_transactions.flatten.map(&:invoice_id)
+    transactions = find_transactions_from_merchant(id)
+    all_invoice_ids = transactions.flatten.map(&:invoice_id)
     successes = find_successful_transactions(all_transactions)
     success_invoice_ids = successes.map(&:invoice_id)
     pending_invoice_ids = all_invoice_ids - success_invoice_ids
@@ -271,14 +231,15 @@ class SalesEngine
     end
   end
 
-  def find_most_revenue_items(x)
-    successful_ids = all_transactions.flatten.map do |transaction|
-      transaction.invoice_id unless transaction.result != ("success")
+  def find_successful_invoice_ids_from_transactions(transactions)
+    transactions.flatten.map do |transaction|
+      transaction.invoice_id if transaction.result == ("success")
     end
+  end
 
-    invoice_items = successful_ids.map do |invoice_id|
-      invoice_item_repository.find_all_by_invoice_id(invoice_id)
-    end
+  def find_most_revenue_items(x)
+    invoice_ids = find_successful_invoice_ids_from_transactions(all_transactions)
+    invoice_items = invoice_items_from_ids(invoice_ids)
 
     items_revenue = invoice_items.flatten.map do |id|
       [id.quantity * id.unit_price,id.item_id ]
