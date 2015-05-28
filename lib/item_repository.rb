@@ -22,23 +22,23 @@ class ItemRepository
   end
 
   def find_by_item_id(id)
-    items.find { |item| item.id == id }
+    items.detect { |item| item.id == id }
   end
 
   def find_by_name(name)
-    items.find { |item| item.name.downcase == name.downcase }
+    items.detect { |item| item.name.downcase == name.downcase }
   end
 
   def find_by_item_description(description)
-    items.find { |item| item.description.downcase == description.downcase }
+    items.detect { |item| item.description.downcase == description.downcase }
   end
 
   def find_by_unit_price(unit_price)
-    items.find { |item| item.unit_price == unit_price }
+    items.detect { |item| item.unit_price == unit_price }
   end
 
   def find_by_merchant_id(merchant_id)
-    items.find { |item| item.merchant_id == merchant_id }
+    items.detect { |item| item.merchant_id == merchant_id }
   end
 
   def find_all_by_name(name)

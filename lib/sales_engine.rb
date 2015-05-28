@@ -45,7 +45,7 @@ class SalesEngine
     invoice_ids.map { |id| transaction_repository.find_all_by_invoice_id(id) }
   end
 
-  def find_successful_transactions(transactions=transaction_repository.all)
+  def find_successful_transactions(transactions = transaction_repository.all)
     transactions.flatten.select do |transaction|
       transaction if transaction.result == "success"
     end
@@ -136,14 +136,14 @@ class SalesEngine
 
   def find_revenue_from_merchant(id, date)
     invoice_items = find_successful_invoice_items_from_merchant(id, date)
-    invoice_items.reduce(0) do |revenue, item|
+    invoice_items.inject(0) do |revenue, item|
       revenue + item.unit_price * item.quantity
     end
   end
 
   def find_count_items_from_merchant(id, date="all")
     invoice_items = find_successful_invoice_items_from_merchant(id, date)
-    invoice_items.reduce(0) do |count, invoice_item|
+    invoice_items.inject(0) do |count, invoice_item|
        count + invoice_item.quantity
     end
   end
@@ -200,10 +200,10 @@ class SalesEngine
   end
 
   def find_revenue_by_date_from_merchant_repo(date)
-    merchant_revenue(date).map { |i| i[0] }.reduce(:+)
+    merchant_revenue(date).map { |i| i[0] }.inject(:+)
   end
 
-  def find_successful_invoice_ids_from_trans(trans=transaction_repository.all)
+  def find_successful_invoice_ids_from_trans(trans = transaction_repository.all)
     trans.flatten.map do |transaction|
       transaction.invoice_id if transaction.result == ("success")
     end

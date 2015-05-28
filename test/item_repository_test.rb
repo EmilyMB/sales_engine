@@ -75,9 +75,9 @@ class ItemRepositoryTest < Minitest::Test
   end
 
   def test_find_by_merchant_id
-     item = item_repo.find_by_merchant_id(1)
+    item = item_repo.find_by_merchant_id(1)
 
-     assert_equal 1, item.merchant_id
+    assert_equal 1, item.merchant_id
   end
 
   def test_find_all_by_name
