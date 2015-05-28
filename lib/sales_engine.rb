@@ -49,7 +49,7 @@ class SalesEngine
 
   def find_transactions_from_invoices(invoices)
     all_invoice_ids = invoices.map(&:id)
-    all_transactions = all_invoice_ids.map do |invoice_id|
+    all_invoice_ids.map do |invoice_id|
       transaction_repository.find_all_by_invoice_id(invoice_id)
     end
   end
@@ -111,7 +111,7 @@ class SalesEngine
     invoice_repository.find_by_id(id)
   end
 
-  def find_invoice_ids_by_merchant_and_date(merchant_id, date)
+  def find_invoice_ids_by_merchant_and_date(id, date)
     all_invoices = merchant_repository.find_invoices_by_merchant(id)
     if date == "all"
       invoice_ids = all_invoices.map(&:id)
@@ -128,7 +128,7 @@ class SalesEngine
     end
   end
 
-  def invoice_items_from_invoice_ids(invoice_ids)
+  def find_invoice_items_from_invoice_ids(invoice_ids)
     invoice_ids.map do |invoice_id|
       invoice_item_repository.find_all_by_invoice_id(invoice_id)
     end
@@ -136,9 +136,9 @@ class SalesEngine
 
   def find_successful_invoice_items_from_merchant(id, date)
     invoice_ids = find_invoice_ids_by_merchant_and_date(id, date)
-    all_transactions = find_transactions_from_invoice_ids(invoice_ids)
-    invoices = find_successful_invoice_ids_from_transactions(all_transactions)
-    invoice_items_from_invoice_ids(invoices)
+    transactions = find_transactions_from_invoice_ids(invoice_ids)
+    invoices = find_successful_invoice_ids_from_transactions(transactions)
+    find_invoice_items_from_invoice_ids(invoices)
   end
 
   def find_revenue_from_merchant(id, date)
@@ -170,19 +170,19 @@ class SalesEngine
     customer_repository.find_by_id(fav_customer.first)
   end
 
+  def find_customers_from_invoice_ids(invoice_ids)
+    customer_ids = invoice_ids.map do |invoice_id|
+      invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
+    end
+    customer_ids.map { |customer| customer_repository.find_by_id(customer[0]) }
+  end
+
   def find_pending_customers_from_merchant(id)
     transactions = find_transactions_from_merchant(id)
     all_invoice_ids = transactions.flatten.map(&:invoice_id)
-    successes = find_successful_transactions(all_transactions)
-    success_invoice_ids = successes.map(&:invoice_id)
-    pending_invoice_ids = all_invoice_ids - success_invoice_ids
-    pending_customer_ids = pending_invoice_ids.map do |invoice_id|
-      invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
-    end
-
-    pending_customers = pending_customer_ids.map do |customer|
-      customer_repository.find_by_id(customer[0])
-    end
+    invoice_ids = find_successful_invoice_ids_from_transactions(transactions)
+    pending_invoice_ids = all_invoice_ids - invoice_ids
+    find_customers_from_invoice_ids(pending_invoice_ids)
   end
 
   def merchant_revenue(date="all")
@@ -205,18 +205,16 @@ class SalesEngine
 
   def find_most_revenue_from_merchant_repository(x)
     merchant_ids = merchant_revenue.sort[-x..-1].collect { |i| i[1] }
-    merchants = merchant_ids.map do |merchant_id|
+    merchant_ids.reverse.map do |merchant_id|
       merchant_repository.find_by_id(merchant_id)
     end
-    merchants.reverse
   end
 
   def find_most_items_sold_from_merchant_repository(x)
     merchant_ids = merchant_items.sort[-x..-1].collect { |i| i[1] }
-    merchants = merchant_ids.map do |merchant_id|
+    merchant_ids.reverse.map do |merchant_id|
       merchant_repository.find_by_id(merchant_id)
     end
-    merchants.reverse
   end
 
   def find_revenue_by_date_from_merchant_repository(date)
@@ -224,11 +222,7 @@ class SalesEngine
   end
 
   def all_transactions
-    all_invoices = invoice_repository.all
-    invoice_ids = all_invoices.map(&:id)
-    invoice_ids.map do |invoice_id|
-      transaction_repository.find_all_by_invoice_id(invoice_id)
-    end
+    transaction_repository.all
   end
 
   def find_successful_invoice_ids_from_transactions(transactions)
@@ -239,7 +233,7 @@ class SalesEngine
 
   def find_most_revenue_items(x)
     invoice_ids = find_successful_invoice_ids_from_transactions(all_transactions)
-    invoice_items = invoice_items_from_ids(invoice_ids)
+    invoice_items = find_invoice_items_from_invoice_ids(invoice_ids)
 
     items_revenue = invoice_items.flatten.map do |id|
       [id.quantity * id.unit_price,id.item_id ]
