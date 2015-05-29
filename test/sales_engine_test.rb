@@ -12,39 +12,14 @@ class SalesEngineTest < Minitest::Test
     assert sales_engine.respond_to?(:startup)
   end
 
-  def test_a_sales_engine_has_a_customer_repository
-    sales_engine.startup_customer
+  def test_a_sales_engine_has_repositories
+    sales_engine.startup
 
     assert sales_engine.customer_repository
-  end
-
-  def test_a_sales_engine_has_an_invoice_repository
-    sales_engine.startup_invoice
-
     assert sales_engine.invoice_repository
-  end
-
-  def test_a_sales_engine_has_an_invoice_item_repository
-    sales_engine.startup_invoice_item
-
     assert sales_engine.invoice_item_repository
-  end
-
-  def test_a_sales_engine_has_a_item_repository
-    sales_engine.startup_item
-
     assert sales_engine.item_repository
-  end
-
-  def test_a_sales_engine_has_a_merchant_repository
-    sales_engine.startup_merchant
-
     assert sales_engine.merchant_repository
-  end
-
-  def test_a_sales_engine_has_a_transaction_repository
-    sales_engine.startup_transaction
-
     assert sales_engine.transaction_repository
   end
 
@@ -109,18 +84,22 @@ class SalesEngineTest < Minitest::Test
   end
 
   def test_it_finds_most_revenue
-    assert sales_engine.respond_to?(:find_most_revenue_from_merchant_repository)
+    assert sales_engine.respond_to?(:find_most_revenue_from_merchant_repo)
   end
 
-  def test_it_finds_most_items
-    assert sales_engine.respond_to?(:find_most_items_sold_from_merchant_repository)
+  def test_it_finds_most_items_from_merchant_repo
+    assert sales_engine.respond_to?(:find_most_items_sold_from_merchant_repo)
   end
 
   def test_it_finds_revenue_by_date
-    assert sales_engine.respond_to?(:find_revenue_by_date_from_merchant_repository)
+    assert sales_engine.respond_to?(:find_revenue_by_date_from_merchant_repo)
   end
 
   def test_it_finds_highest_revenue_items
     assert sales_engine.respond_to?(:find_most_revenue_items)
+  end
+
+  def test_it_find_most_sold_items
+    assert sales_engine.respond_to?(:find_most_popular_items)
   end
 end

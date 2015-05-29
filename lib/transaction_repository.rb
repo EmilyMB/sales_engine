@@ -43,7 +43,7 @@ class TransactionRepository
   end
 
   def find_by_id(id)
-    transactions.find { |transaction| transaction.id == id }
+    transactions.detect { |transaction| transaction.id == id }
   end
 
   def find_by_invoice_id(id)
@@ -65,7 +65,7 @@ class TransactionRepository
   end
 
   def find_by_result(success)
-    transactions.find { |transaction| transaction.result == success }
+    transactions.detect { |transaction| transaction.result == success }
   end
 
   def find_all_by_invoice_id(id)

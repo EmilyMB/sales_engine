@@ -5,7 +5,7 @@ class InvoiceRepository < OfficeRepository
   attr_reader :data, :sales_engine
 
   def initialize(invoice, parent)
-    @data ||= invoice.map {|invoice| Invoice.new(invoice, self)}
+    @data ||= invoice.map { |values| Invoice.new(values, self) }
     @sales_engine = parent
   end
 
@@ -66,8 +66,6 @@ class InvoiceRepository < OfficeRepository
     invoice[:id] = data.max_by(&:id).id + 1
     invoice[:customer_id] = data.max_by(&:customer_id).customer_id + 1
     invoice[:merchant_id] = data.max_by(&:merchant_id).merchant_id + 1
-    # invoice[:created_at] = Time.now()
-    # invoice[:updated_at] = Time.now()
     create_invoice_items_from(invoice[:id], input)
     Invoice.new(invoice, self)
   end

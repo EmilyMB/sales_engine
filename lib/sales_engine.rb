@@ -1,68 +1,20 @@
-require "csv"
-require_relative "merchant_repository"
-require_relative "invoice_repository"
-require_relative "invoice_item_repository"
-require_relative "item_repository"
-require_relative "customer_repository"
-require_relative "transaction_repository"
+require_relative "startup"
 
 class SalesEngine
-  attr_reader :parent,
-              :customer_repository,
+  attr_reader :customer_repository,
               :invoice_repository,
               :invoice_item_repository,
               :item_repository,
               :merchant_repository,
               :transaction_repository
-              # :success_transactions_repository
-
-  def initialize
-    @parent = self
-  end
 
   def startup
-    startup_customer
-    startup_invoice
-    startup_invoice_item
-    startup_item
-    startup_merchant
-    startup_transaction
-  end
-
-  def startup_customer
-    customers = CsvReader.load_csv("customers.csv")
-    # customers = CsvReader.load_csv("customers_fixture.csv")
-    @customer_repository = CustomerRepository.new(customers, parent)
-  end
-
-  def startup_invoice
-    invoice = CsvReader.load_csv("invoices.csv")
-    # invoice = CsvReader.load_csv("invoices_fixture.csv")
-    @invoice_repository = InvoiceRepository.new(invoice, parent)
-  end
-
-  def startup_invoice_item
-    invoice_item = CsvReader.load_csv("invoice_items.csv")
-    # invoice_item = CsvReader.load_csv("invoice_items_fixture.csv")
-    @invoice_item_repository = InvoiceItemRepository.new(invoice_item, parent)
-  end
-
-  def startup_item
-    item = CsvReader.load_csv("items.csv")
-    # item = CsvReader.load_csv("items_fixture.csv")
-    @item_repository = ItemRepository.new(item, parent)
-  end
-
-  def startup_merchant
-    merchant = CsvReader.load_csv("merchants.csv")
-    # merchant = CsvReader.load_csv("merchants_fixture.csv")
-    @merchant_repository = MerchantRepository.new(merchant, parent)
-  end
-
-  def startup_transaction
-    transaction = CsvReader.load_csv("transactions.csv")
-    # transaction = CsvReader.load_csv("transactions_fixture.csv")
-    @transaction_repository = TransactionRepository.new(transaction, parent)
+    @customer_repository = Startup.customers(self)
+    @invoice_repository = Startup.invoices(self)
+    @invoice_item_repository = Startup.invoice_items(self)
+    @item_repository = Startup.items(self)
+    @merchant_repository = Startup.merchants(self)
+    @transaction_repository = Startup.transactions(self)
   end
 
   def find_invoices_from_customer(id)
@@ -75,42 +27,39 @@ class SalesEngine
 
   def find_items_from_invoice(id)
     items = find_invoice_items_from_invoice(id)
-    items.map{|item| find_item_from(item.item_id)}
+    items.map { |item| find_item_from(item.item_id) }
   end
 
   def find_transactions_from_customer(id)
     all_invoices = find_invoices_from_customer(id)
-    all_invoice_ids = all_invoices.map(&:id)
-    all_transactions = all_invoice_ids.map do |invoice_id|
-      transaction_repository.find_all_by_invoice_id(invoice_id)
-    end
+    find_transactions_from_invoices(all_invoices)
   end
 
   def find_transactions_from_merchant(id)
     all_invoices = find_invoices_from_merchant(id)
-    all_invoice_ids = all_invoices.map(&:id)
-    all_transactions = all_invoice_ids.map do |invoice_id|
-      transaction_repository.find_all_by_invoice_id(invoice_id)
-    end
+    find_transactions_from_invoices(all_invoices)
   end
 
-  def find_successful_transactions(transactions)
+  def find_transactions_from_invoices(invoices)
+    invoice_ids = invoices.map(&:id)
+    invoice_ids.map { |id| transaction_repository.find_all_by_invoice_id(id) }
+  end
+
+  def find_successful_transactions(transactions = transaction_repository.all)
     transactions.flatten.select do |transaction|
-      transaction unless transaction.result != "success"
+      transaction if transaction.result == "success"
     end
   end
 
   def find_favorite_merchant_from_customer(id)
-    all_transactions = find_transactions_from_customer(id)
-    successes = find_successful_transactions(all_transactions)
-    success_invoice_ids = successes.map(&:invoice_id)
-    success_merchant_ids = success_invoice_ids.map do |invoice_id|
+    transactions = find_transactions_from_customer(id)
+    successes = find_successful_transactions(transactions)
+    invoice_ids = successes.map(&:invoice_id)
+    merchant_ids = invoice_ids.map do |invoice_id|
        invoice_repository.find_all_by_id(invoice_id).map(&:merchant_id)
     end
-    fav_merch = success_merchant_ids.max_by do |id|
-       success_merchant_ids.count(id)
-     end
-    merchant_repository.find_by_merchant_id(fav_merch.first)
+    fav_merch = merchant_ids.max_by { |merch_id| merchant_ids.count(merch_id) }
+    merchant_repository.find_by_id(fav_merch.first)
   end
 
   def find_item_from(id)
@@ -130,7 +79,11 @@ class SalesEngine
   end
 
   def find_merchant_from(id)
-    merchant_repository.find_by_merchant_id(id)
+    merchant_repository.find_by_id(id)
+  end
+
+  def find_merchants_from(merchant_ids)
+    merchant_ids.map { |id| merchant_repository.find_by_id(id) }
   end
 
   def find_transactions_from_invoice(id)
@@ -153,145 +106,153 @@ class SalesEngine
     invoice_repository.find_by_id(id)
   end
 
-
-  def find_successful_invoices_from_merchant(id, date)
-    all_invoices = merchant_repository.find_invoices_by_merchant(id)
+  def find_invoice_ids_by_merchant_and_date(id, date)
+    invoices = merchant_repository.find_invoices_by_merchant(id)
     if date == "all"
-      invoice_ids = all_invoices.map(&:id)
+      invoices.map(&:id)
     else
-      invoice_ids = all_invoices.map do |invoice|
-        invoice.id unless invoice.created_at != date
-      end
+      invoices.map { |invoice| invoice.id if invoice.created_at == date }
     end
+  end
 
-    all_transactions = invoice_ids.map do |invoice_id|
+  def find_transactions_from_invoice_ids(invoice_ids)
+    invoice_ids.map do |invoice_id|
       transaction_repository.find_all_by_invoice_id(invoice_id)
     end
+  end
 
-    successful_ids = all_transactions.flatten.map do |transaction|
-      transaction.invoice_id unless transaction.result != ("success")
-    end
-
-    invoice_items = successful_ids.map do |invoice_id|
+  def find_invoice_items_from_invoice_ids(invoice_ids)
+    invoice_ids.map do |invoice_id|
       invoice_item_repository.find_all_by_invoice_id(invoice_id)
     end
-    return (invoice_items)
+  end
+
+  def find_successful_invoice_items_from_merchant(id, date)
+    invoice_ids = find_invoice_ids_by_merchant_and_date(id, date)
+    transactions = find_transactions_from_invoice_ids(invoice_ids)
+    invoices = find_successful_invoice_ids_from_trans(transactions)
+    find_invoice_items_from_invoice_ids(invoices).flatten
   end
 
   def find_revenue_from_merchant(id, date)
-    revenue = 0
-    find_successful_invoices_from_merchant(id, date).flatten.each do |invoice_item|
-        revenue = revenue + invoice_item.unit_price * invoice_item.quantity
+    invoice_items = find_successful_invoice_items_from_merchant(id, date)
+    invoice_items.inject(0) do |revenue, item|
+      revenue + item.unit_price * item.quantity
     end
-    revenue
   end
 
   def find_count_items_from_merchant(id, date="all")
-    count = find_successful_invoices_from_merchant(id, date).flatten.reduce(0) do |count, invoice_item|
+    invoice_items = find_successful_invoice_items_from_merchant(id, date)
+    invoice_items.inject(0) do |count, invoice_item|
        count + invoice_item.quantity
     end
-    count
+  end
+
+  def find_customer_ids_by_invoices(invoice_ids)
+    invoice_ids.map do |invoice_id|
+       invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
+    end
   end
 
   def find_favorite_customer_from_merchant(id)
-    all_transactions = find_transactions_from_merchant(id)
-    successes = find_successful_transactions(all_transactions)
-    success_invoice_ids = successes.map(&:invoice_id)
-    success_customer_ids = success_invoice_ids.map do |invoice_id|
-       invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
+    transactions = find_transactions_from_merchant(id)
+    invoice_ids = find_successful_invoice_ids_from_trans(transactions)
+    customer_ids = find_customer_ids_by_invoices(invoice_ids).flatten
+    fav_customer = customer_ids.max_by { |cust_id| customer_ids.count(cust_id) }
+    customer_repository.find_by_id(fav_customer)
+  end
+
+  def find_customers_from_invoice_ids(invoice_ids)
+    customer_ids = invoice_ids.map do |invoice_id|
+      invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
     end
-    fav_customer = success_customer_ids.max_by do |id|
-      success_customer_ids.count(id)
-    end
-    customer_repository.find_by_id(fav_customer.first)
+    customer_ids.map { |customer| customer_repository.find_by_id(customer[0]) }
   end
 
   def find_pending_customers_from_merchant(id)
-    all_transactions = find_transactions_from_merchant(id)
-    all_invoice_ids = all_transactions.flatten.map(&:invoice_id)
-    successes = find_successful_transactions(all_transactions)
-    success_invoice_ids = successes.map(&:invoice_id)
-    pending_invoice_ids = all_invoice_ids - success_invoice_ids
-    pending_customer_ids = pending_invoice_ids.map do |invoice_id|
-      invoice_repository.find_all_by_id(invoice_id).map(&:customer_id)
-    end
-
-    pending_customers = pending_customer_ids.map do |customer|
-      customer_repository.find_by_id(customer[0])
-    end
+    transactions = find_transactions_from_merchant(id)
+    all_invoice_ids = transactions.flatten.map(&:invoice_id)
+    invoice_ids = find_successful_invoice_ids_from_trans(transactions)
+    pending_invoice_ids = all_invoice_ids - invoice_ids
+    find_customers_from_invoice_ids(pending_invoice_ids)
   end
 
   def merchant_revenue(date="all")
-    merchant_revenue = []
-    merchant_repository.all.each do |merchant|
-      merchant_id = merchant.id
-      merchant_revenue << [find_revenue_from_merchant(merchant_id, date),merchant_id]
+    merchant_repository.all.map do |merchant|
+      [find_revenue_from_merchant(merchant.id, date), merchant.id]
     end
-    merchant_revenue
   end
 
   def merchant_items(date="all")
-    merchant_items = []
-    merchant_repository.all.each do |merchant|
-      merchant_id = merchant.id
-      merchant_items << [find_count_items_from_merchant(merchant_id, date),merchant_id]
+    merchant_repository.all.map do |merchant|
+      [find_count_items_from_merchant(merchant.id, date), merchant.id]
     end
-    merchant_items
   end
 
-  def find_most_revenue_from_merchant_repository(x)
-    merchant_ids = merchant_revenue.sort[-x..-1].collect {|i| i[1]}
-    merchants = merchant_ids.map do |merchant_id|
-      merchant_repository.find_by_merchant_id(merchant_id)
-    end
-    merchants.reverse
+  def find_most_revenue_from_merchant_repo(x)
+    merchant_ids = merchant_revenue.sort[-x..-1].map { |i| i[1] }.reverse
+    find_merchants_from(merchant_ids)
   end
 
-  def find_most_items_sold_from_merchant_repository(x)
-    merchant_ids = merchant_items.sort[-x..-1].collect {|i| i[1]}
-    merchants = merchant_ids.map do |merchant_id|
-      merchant_repository.find_by_merchant_id(merchant_id)
-    end
-    merchants.reverse
+  def find_most_items_sold_from_merchant_repo(x)
+    merchant_ids = merchant_items.sort[-x..-1].map { |i| i[1] }.reverse
+    find_merchants_from(merchant_ids)
   end
 
-  def find_revenue_by_date_from_merchant_repository(date)
-    merchant_revenue(date).collect {|i| i[0]}.reduce(:+)
+  def find_revenue_by_date_from_merchant_repo(date)
+    merchant_revenue(date).map { |i| i[0] }.inject(:+)
+  end
+
+  def find_successful_invoice_ids_from_trans(trans = transaction_repository.all)
+    trans.flatten.map do |transaction|
+      transaction.invoice_id if transaction.result == ("success")
+    end
+  end
+
+  def items_with_revenue
+    invoice_ids = find_successful_invoice_ids_from_trans
+    invoice_items = find_invoice_items_from_invoice_ids(invoice_ids).flatten
+    invoice_items.inject(Hash.new(0)) do |hsh, id|
+      hsh[id.item_id] += id.quantity * id.unit_price; hsh
+    end
   end
 
   def find_most_revenue_items(x)
+    items_sorted_desc(items_with_revenue, x)
+  end
 
-    all_invoices = invoice_repository.all
-      invoice_ids = all_invoices.map(&:id)
-    all_transactions = invoice_ids.map do |invoice_id|
-      transaction_repository.find_all_by_invoice_id(invoice_id)
+  def items_with_count
+    invoice_ids = find_successful_invoice_ids_from_trans
+    invoice_items = find_invoice_items_from_invoice_ids(invoice_ids).flatten
+    invoice_items.inject(Hash.new(0)) do |hsh, id|
+      hsh[id.item_id] += id.quantity; hsh
     end
+  end
 
-    successful_ids = all_transactions.flatten.map do |transaction|
-      transaction.invoice_id unless transaction.result != ("success")
-    end
+  def find_most_popular_items(x)
+    items_sorted_desc(items_with_count, x)
+  end
 
-    invoice_items = successful_ids.map do |invoice_id|
-      invoice_item_repository.find_all_by_invoice_id(invoice_id)
-    end
-
-    items_revenue = invoice_items.flatten.map do |id|
-      [id.quantity * id.unit_price,id.item_id ]
-    end
-
-    item_hash = items_revenue.group_by{ |n| n[1] }
-    item_revenue = []
-    for n in 1..10000
-
-      unless item_hash[n].nil?
-        item_revenue << [item_hash[n].collect{ |n| n[0] }.reduce(:+), item_hash[n].flatten[1]]
-      end
-    end
-
-    item_ids = item_revenue.sort[-x..-1].collect {|i| i[1]}
-    items = item_ids.map do |item_id|
+  def items_sorted_desc(items, x)
+    item_ids = items.sort_by { |_key, val| -val }.map { |i| i[0] }
+    item_ids[0...x].map do |item_id|
       item_repository.find_by_item_id(item_id)
     end
-    return items.reverse
+  end
+
+  def find_best_day_for(item_id)
+    items = invoice_items_with_dates_for(item_id)
+    total = items.inject(Hash.new(0)) do |hsh, item|
+      hsh[item[1]] += item[0].quantity; hsh
+    end
+    total.max_by { |_key, val| val }[0]
+  end
+
+  def invoice_items_with_dates_for(item_id)
+    invoice_items = find_invoice_items_from(item_id)
+    invoice_ids = invoice_items.map(&:invoice_id)
+    invoices = invoice_ids.map { |id| invoice_repository.find_by_id(id) }
+    invoice_dates = invoices.map(&:created_at)
+    invoice_items.zip(invoice_dates)
   end
 end

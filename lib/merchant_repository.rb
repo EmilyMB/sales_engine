@@ -7,7 +7,7 @@ class MerchantRepository
 
   def initialize(merchants = "", sales_engine)
     @sales_engine = sales_engine
-    @merchants ||= merchants.map {|merchant| Merchant.new(merchant, self)}
+    @merchants ||= merchants.map { |merchant| Merchant.new(merchant, self) }
   end
 
   def inspect
@@ -22,20 +22,20 @@ class MerchantRepository
     merchants.sample
   end
 
-  def find_by_merchant_id(id)
-    merchants.find { |merchant| merchant.id == id}
+  def find_by_id(id)
+    merchants.detect { |merchant| merchant.id == id }
   end
 
   def find_by_name(name)
-    merchants.find { |merchant| merchant.name == name }
+    merchants.detect { |merchant| merchant.name == name }
   end
 
   def find_all_by_name(name)
-    merchants.find_all { |merchant| merchant.name.downcase == name.downcase }
+    merchants.select { |merchant| merchant.name.downcase == name.downcase }
   end
 
   def find_all_by_merchant_id(id)
-    merchants.find_all { |merchant| merchant.id == id}
+    merchants.select { |merchant| merchant.id == id }
   end
 
   def find_items_by_merchant(id)
@@ -59,14 +59,14 @@ class MerchantRepository
   end
 
   def most_revenue(x)
-    sales_engine.find_most_revenue_from_merchant_repository(x)
+    sales_engine.find_most_revenue_from_merchant_repo(x)
   end
 
   def most_items(x)
-    sales_engine.find_most_items_sold_from_merchant_repository(x)
+    sales_engine.find_most_items_sold_from_merchant_repo(x)
   end
 
   def revenue(date)
-    sales_engine.find_revenue_by_date_from_merchant_repository(date)
+    sales_engine.find_revenue_by_date_from_merchant_repo(date)
   end
 end

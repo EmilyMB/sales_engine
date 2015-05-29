@@ -35,7 +35,10 @@ class Invoice
   end
 
   def charge(transaction_info)
-    repo.create_transaction_from(id, transaction_info[:credit_card_number],
-    transaction_info[:credit_card_expiration], transaction_info[:result])
+    repo.create_transaction_from(id,
+                                 transaction_info[:credit_card_number],
+                                 transaction_info[:credit_card_expiration],
+                                 transaction_info[:result]
+                                )
   end
 end

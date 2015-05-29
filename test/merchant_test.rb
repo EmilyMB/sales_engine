@@ -2,7 +2,7 @@ require_relative "test_helper"
 require_relative "../lib/merchant"
 
 class MerchantTest < Minitest::Test
-  attr_reader :merchant, :repository
+  attr_reader :merchant, :repo
 
   def setup
     data = {
@@ -11,8 +11,8 @@ class MerchantTest < Minitest::Test
       created_at: "2012-03-27 14:53:59 UTC",
       updated_at: "2012-03-27 14:53:59 UTC"
     }
-    @repository = Minitest::Mock.new
-    @merchant = Merchant.new(data, repository)
+    @repo = Minitest::Mock.new
+    @merchant = Merchant.new(data, repo)
   end
 
   def test_merchant_info
@@ -22,37 +22,37 @@ class MerchantTest < Minitest::Test
     assert_equal "2012-03-27 14:53:59 UTC", merchant.updated_at
   end
 
-  def test_it_has_a_repository
-    assert merchant.repository
+  def test_it_has_a_repo
+    assert merchant.repo
   end
 
-  def test_it_delegates_items_method_to_repository
-    repository.expect(:find_items_by_merchant, nil, [3])
+  def test_it_delegates_items_method_to_repo
+    repo.expect(:find_items_by_merchant, nil, [3])
     merchant.items
-    repository.verify
+    repo.verify
   end
 
   def test_find_it_delegates_invoices_by_merchant
-    repository.expect(:find_invoices_by_merchant, nil, [3])
+    repo.expect(:find_invoices_by_merchant, nil, [3])
     merchant.invoices
-    repository.verify
+    repo.verify
   end
 
-  def test_it_delagates_revenue_to_repository
-    repository.expect(:find_revenue_by_merchant, nil, [3, "all"])
+  def test_it_delagates_revenue_to_repo
+    repo.expect(:find_revenue_by_merchant, nil, [3, "all"])
     merchant.revenue
-    repository.verify
+    repo.verify
   end
 
-  def test_it_delegates_favorite_customer_to_repository
-    repository.expect(:find_favorite_customer_from, nil, [3])
+  def test_it_delegates_favorite_customer_to_repo
+    repo.expect(:find_favorite_customer_from, nil, [3])
     merchant.favorite_customer
-    repository.verify
+    repo.verify
   end
 
-  def test_it_delegates_pending_customers_to_repository
-    repository.expect(:find_pending_customers_from, nil, [3])
+  def test_it_delegates_pending_customers_to_repo
+    repo.expect(:find_pending_customers_from, nil, [3])
     merchant.customers_with_pending_invoices
-    repository.verify
+    repo.verify
   end
 end
