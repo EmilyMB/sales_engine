@@ -22,4 +22,8 @@ class Item
   def invoice_items
     repo.find_invoice_items_from(id)
   end
+
+  def best_day
+    repo.find_best_day_for(id)
+  end
 end

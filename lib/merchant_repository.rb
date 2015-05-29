@@ -23,7 +23,7 @@ class MerchantRepository
   end
 
   def find_by_id(id)
-    merchants.detect { |merchant| merchant.id == id}
+    merchants.detect { |merchant| merchant.id == id }
   end
 
   def find_by_name(name)
@@ -31,11 +31,11 @@ class MerchantRepository
   end
 
   def find_all_by_name(name)
-    merchants.find_all { |merchant| merchant.name.downcase == name.downcase }
+    merchants.select { |merchant| merchant.name.downcase == name.downcase }
   end
 
   def find_all_by_merchant_id(id)
-    merchants.find_all { |merchant| merchant.id == id}
+    merchants.select { |merchant| merchant.id == id }
   end
 
   def find_items_by_merchant(id)

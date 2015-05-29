@@ -211,21 +211,48 @@ class SalesEngine
 
   def items_with_revenue
     invoice_ids = find_successful_invoice_ids_from_trans
-    invoice_items = find_invoice_items_from_invoice_ids(invoice_ids)
-    items_revenue = Hash.new(0)
-    invoice_items.flatten.map do |id|
-      items_revenue[id.item_id] += id.quantity * id.unit_price
+    invoice_items = find_invoice_items_from_invoice_ids(invoice_ids).flatten
+    invoice_items.inject(Hash.new(0)) do |hsh, id|
+      hsh[id.item_id] += id.quantity * id.unit_price; hsh
     end
-    items_revenue
   end
 
   def find_most_revenue_items(x)
-    all_item_ids = items_with_revenue.sort_by { |_, val| -val }.map { |i| i[0] }
-    all_item_ids[0...x].map do |item_id|
-      item_repository.find_by_item_id(item_id)
+    items_sorted_desc(items_with_revenue, x)
+  end
+
+  def items_with_count
+    invoice_ids = find_successful_invoice_ids_from_trans
+    invoice_items = find_invoice_items_from_invoice_ids(invoice_ids).flatten
+    invoice_items.inject(Hash.new(0)) do |hsh, id|
+      hsh[id.item_id] += id.quantity; hsh
     end
   end
 
   def find_most_popular_items(x)
+    items_sorted_desc(items_with_count, x)
+  end
+
+  def items_sorted_desc(items, x)
+    item_ids = items.sort_by { |_key, val| -val }.map { |i| i[0] }
+    item_ids[0...x].map do |item_id|
+      item_repository.find_by_item_id(item_id)
+    end
+  end
+
+  def find_best_day_for(item_id)
+    items = invoice_items_with_dates_for(item_id)
+    total = items.inject(Hash.new(0)) do |hsh, item|
+      hsh[item[1]] += item[0].quantity; hsh
+    end
+    total.max_by { |_key, val| val }[0]
+  end
+
+  def invoice_items_with_dates_for(item_id)
+    invoice_items = find_invoice_items_from(item_id)
+    invoice_ids = invoice_items.map(&:invoice_id)
+    invoices = invoice_ids.map { |id| invoice_repository.find_by_id(id) }
+    invoice_dates = invoices.map(&:created_at)
+    invoice_items.zip(invoice_dates)
   end
 end

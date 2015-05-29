@@ -70,5 +70,10 @@ class ItemRepository
   end
 
   def most_items(x)
+    sales_engine.find_most_popular_items(x)
+  end
+
+  def find_best_day_for(item_id)
+    sales_engine.find_best_day_for(item_id)
   end
 end
